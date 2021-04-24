@@ -1,0 +1,315 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{geometry}
+\geometry{
+   includeheadfoot,
+   margin=2.5cm
+}
+
+\usepackage{listings}
+\lstset{
+  language=Java,
+  basicstyle=\ttfamily,
+  escapeinside={(*}{*)},
+}
+
+\title{SOFTWARE TESTING COURSEWORK SPECIFICATION 2020/21}
+%\author{s.akca }
+\date{\today}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+%\setlength{\parskip}{1em}  % hack to make it easier to match format of old version
+\setlength{\parindent}{0pt} % hack to make it easier to match format of old version
+
+\begin{document}
+
+
+\maketitle
+
+\textbf{To be read in conjunction with the Description of the coursework.}
+
+\section{Specifications for tasks 1 and 2}
+
+\subsection{Overview}
+
+The command line option parser is developed to process command line options stored in an
+input string and output a set of value pairs containing information retrieved from the input string.
+
+The user can first define a set of options:
+
+\begin{itemize}
+\item Option name \lstinline{filename}, with a String value type.
+\item Option name \lstinline{output}, with a shortcut \lstinline{o} and a String value type.
+\end{itemize}
+
+After the options are defined, the parser is able to process the following example input of
+command line options:
+
+\begin{lstlisting}
+--filename 1.txt -o 2.txt
+\end{lstlisting}
+
+In this example, the prefix \lstinline{--} indicates using the name of
+the option while \lstinline{-} indicates using the shortcut of the
+option.
+
+The parser will get the following value pairs:
+
+\begin{lstlisting}
+filename = "1.txt"
+output = "2.txt"
+\end{lstlisting}
+  
+\subsection{Parser Initialisation}
+
+The parser is initialised using
+
+\begin{lstlisting}
+Parser parser = new Parser();
+\end{lstlisting}
+
+There is no further specification regarding class initialisation.
+
+\subsection{Add options with a shortcut}
+
+\begin{lstlisting}
+void add(String option_name, String shortcut, int value_type)
+\end{lstlisting}
+
+This method is for adding a new option that has a shortcut.
+
+\subsubsection*{Example:}
+\begin{lstlisting}
+parser.add( "output" , "o" , Parser.STRING);
+parser.add( "optimise" , "O" , Parser.BOOLEAN);
+\end{lstlisting}
+
+\subsubsection*{Parameter list:}
+
+\lstinline{String} \textsl{option\_name} : name of the option in the command line to receive user-specified value.
+
+\lstinline{String} \textsl{short\_cut} : a short cut of this option
+
+\lstinline{int} \textsl{value\_type} : type of the expected value. Choices of the parameter include:
+
+\begin{itemize}
+\item \lstinline{Parser.INTEGER}
+
+\item \lstinline{Parser.BOOLEAN}
+
+\item \lstinline{Parser.STRING}
+
+\item \lstinline{Parser.CHAR}
+\end{itemize}
+
+\subsubsection*{Return value:}
+
+This method does not have a return value.
+
+\subsubsection*{Specifications:}
+\begin{enumerate}
+\item Adding an option with the same name as an existing option will override the option
+defined previously.
+\item Name and shortcut of options should only contain digits, letters and underscores.
+Digits cannot appear as the first character. A runtime exception is thrown otherwise.
+\item Option names and shortcuts are case-sensitive.
+\item An option can have a shortcut that is the same as the name of another option. For
+example, the user can define an option whose name is \lstinline{output} with a shortcut \lstinline{o} and
+another option whose name is \lstinline{o}. When assigning values to these options, \lstinline{--output}
+and \lstinline{-o} is used for the first option and \lstinline{--o} is used for the second option.
+\item Boolean options are assigned to true using any value except 0 and false (case
+insensitive), or without having a value. For example, the option \lstinline{optimise} is set to true
+by \lstinline{-O}, \lstinline{--optimise}, \lstinline{-O=true}, \lstinline{-O=1} or \lstinline{-O 100} while it is set to false by \lstinline{-O=false},
+\lstinline{--optimise=0} or not using this option in the entire string.
+\end{enumerate}
+
+\subsection{Add options without a shortcut}
+\begin{lstlisting}
+void add(String option_name, int value_type)
+\end{lstlisting}
+
+This method is for adding a new option that does not have a shortcut.
+
+\subsubsection*{Example:}
+\begin{lstlisting}
+parser.add( "output" , Parser.STRING);
+parser.add( "optimise" , Parser.BOOLEAN);
+\end{lstlisting}
+
+\subsubsection*{Parameter list:}
+
+\lstinline{String} \textsl{option\_name} : name of the option in the command line to receive user-specified value.
+
+\lstinline{int} \textsl{value\_type} : type of the expected value. Choices of the parameter include:
+\begin{itemize}
+\item \lstinline{Parser.INTEGER}
+\item \lstinline{Parser.BOOLEAN}
+\item \lstinline{Parser.STRING}
+\item \lstinline{Parser.CHAR}
+\end{itemize}
+
+\subsubsection*{Return value:}
+
+This method does not have a return value.
+
+\subsubsection*{Specifications:}
+
+Same as specifications of the first add function.
+
+\subsection{Parse command line options}
+\begin{lstlisting}
+int parse(String command_line_options)
+\end{lstlisting}
+
+Parse the string containing command line options.
+
+\subsubsection*{Example:}
+\begin{lstlisting}
+parser.parse( "--input 1.txt --output=2.txt" );
+parser.parse( "-O" );
+\end{lstlisting}
+
+\subsubsection*{Parameter list:}
+
+\lstinline{String} \textsl{command\_line\_options} : command line option string.
+
+\subsubsection*{Return value:}
+
+This method returns 0 if the parsing succeeds and other values if the input is not valid or the
+parser fails.
+
+\subsubsection*{Specifications:}
+\begin{enumerate}
+\item The prefix \lstinline{--} is used for the full name of the option.
+\item The prefix \lstinline{-} is used for the shortcut version of the option.
+\item Assigning a value to the option can either be using a \lstinline{=}
+  or a space. That is, \lstinline{option=value} and \lstinline{option value}
+  are both valid.
+\item The user can use quotation marks, single or double, optionally
+  around the value.  \texttt{option=”value”} , \texttt{option=’value’}
+  and \lstinline{option=value} are all valid and result in the same
+  effect.
+\item As quotation marks can be used to decorate values, they can
+  still be part of the value if the user wants. If single quotation
+  marks are used, double quotation marks in the value string are
+  viewed as part of the string and vice versa. For example,
+  \texttt{option=’value=”abc” ’} is valid and the value of the option is
+  \texttt{value=”abc”}.
+\item If the user assigns values to the option multiple times, the
+  value taken by the option is from the last assignment.
+\item The user does not need to provide values for every option. For
+  the options that are not assigned a value using this function, a
+  default value (described in Section~\ref{ss:retrieve}) is stored.
+\item This method can be used multiple times as shown in the example
+  above. After these two function calls, three options are assigned to
+  values and can be retrieved by the following methods.
+\end{enumerate}
+
+\subsection{Retrieve information\label{ss:retrieve}}
+\begin{lstlisting}
+int getInteger(String option)
+boolean getBoolean(String option)
+String getString(String option)
+char getChar(String option)
+\end{lstlisting}
+
+Retrieve the value of an option.
+
+\subsubsection*{Example:}
+\begin{lstlisting}
+String output_file_name = parser.getString( "output" );
+boolean optimise = parser.getBoolean( "O" );
+\end{lstlisting}
+
+\subsubsection*{Parameter list:}
+
+\lstinline{String} \textsl{option} : the full name or shortcut of an option.
+
+\subsubsection*{Return value:}
+
+These methods return the value of the corresponding option.
+
+\subsubsection*{Specifications:}
+\begin{enumerate}
+\item The order of search is full name of options first and then shortcut. For example, if \lstinline{o}
+exists as a full name for an option and a shortcut for another option, this function returns
+the value of the first option.
+\item If the option is not defined or not provided a value, a default
+  value is used: 0 for \lstinline{INTEGER}, \lstinline{false} for
+  \lstinline{BOOLEAN}, an empty String \lstinline{""} for \lstinline{STRING}
+  and \lstinline{'\0'} for CHAR
+\end{enumerate}
+
+\section{Specifications for task 3}
+
+An option may also take a list of characters as its value. In order to
+retrieve value types that are character lists, please implement the
+following function as a method of the Parser class:
+\begin{lstlisting}
+List<Character> getCharacterList(String option);
+\end{lstlisting}
+
+\subsubsection*{Example:}
+
+\begin{lstlisting}
+Parser parser = new Parser();
+parser.add("list","l",Parser.STRING);
+parser.parser("--list=e-ck.txt");
+List l = parser.getCharacterList("list");
+\end{lstlisting}
+
+In this example, the returned list contains list values \{'e','d','c', 'k', '.', 't', 'x', 't'\}.
+
+\subsubsection*{Parameter list:}
+
+\lstinline{String} \textsl{option} : the full name or shortcut of an option.  
+
+\subsubsection*{Return value:} 
+
+This method returns the list of all character values retrieved from
+the value of the option. It returns an empty list if the input is not
+valid or the parser fails.
+
+\subsubsection*{Specifications:}
+
+\begin{enumerate}
+\item The order of search is full name of options first and then
+  shortcut. For example, if \lstinline{o} exists as a full name for an
+  option and a shortcut for another option, this function returns the
+  value of the first option.
+\item If the option is not provided a value, an empty list is
+  returned.
+\item The character list value may only contain letters, digits and
+  full stops(.).
+\begin{lstlisting}
+parser.parse("--option=test123.txt");
+parser.getCharList("option");
+\end{lstlisting}
+will return \{'t', 'e', 's', 't', '1', '2', '3', '.', 't', 'x', 't'\};
+\item The value of the option is not case sensitive. For example,
+  "Test123.txt" and "test123.txt" both will return \{'t', 'e', 's',
+  't', '1', '2', '3', '.', 't', 'x', 't'\};
+\item If a value starts with a hyphen (-), the function will return an
+  empty list. If a hyphen occurs elsewhere in the value, the function
+  will remove the hyphen. For example,
+    
+\begin{lstlisting}
+parser.parse("--option=-test123.txt");
+parser.getCharList("option"); // This returns an empty list
+\end{lstlisting}
+   
+\begin{lstlisting}
+parser.parse("--option=test123-.txt");
+// This returns  {'t','e','s','t','1','2','3','.','t','x','t'};
+parser.getCharList("option");
+\end{lstlisting}
+   
+\item A hyphen (-) indicates an inclusive range of char. For example,
+  \lstinline{"a-c"} represents a,b,c and \lstinline{"c-a"} represents c,b,a.
+\end{enumerate}
+
+\end{document}

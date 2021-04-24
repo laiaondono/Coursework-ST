@@ -1,0 +1,10 @@
+ADVANTAGES
+- Improves the coverage of testing because using automated execution of test cases is faster than a manual execution.
+- It is a quick and easy tool to use, which makes it a good option for when you update a few parts of the software and afterwards you want to check if it has new flaws.
+- Automated test generation tool can run automatically with no supervision or manual intervention, so testers have free time and can focus on other tasks such as exploratory testing for new features. 
+
+DISADVANTAGES
+- The application could have several bugs that go undetected, as the tool has not been programmed to look for these specific flaws.
+- There can be other factors to why the tests aren’t passing (a service being down, problems with the network, etc.).
+- These tools require maintenance and additionally skilled people to code and train them. 
+
